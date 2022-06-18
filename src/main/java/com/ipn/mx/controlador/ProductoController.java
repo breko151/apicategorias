@@ -82,37 +82,35 @@ public class ProductoController {
 	}
 	
 	@PutMapping("/producto/{id}")
-	public ResponseEntity<?> update(@Valid @RequestBody Producto producto, BindingResult resultado, @PathVariable Long id) {
-		Producto productoActual = service.findById(id);
-		Producto productoActualizado = null;
-		Map<String, Object> respuesta = new HashMap<>();
+	    public ResponseEntity<?> update(@Valid @RequestBody Producto producto, BindingResult resultado, @PathVariable Long id){
+		Producto ProductoActual = service.findById(id);
+		Producto ProductoActualizado = null;
+		Map<String,Object> respuesta = new HashMap<>();
 		if(resultado.hasErrors()) {
-			List<String> errores = resultado.getFieldErrors().stream().map(err ->"La columna"+err.getField()+""+err.getDefaultMessage()).collect(Collectors.toList());
-			respuesta.put("errores", errores);
-			return new ResponseEntity<Map<String, Object>>(respuesta, HttpStatus.BAD_REQUEST);
-		}
-		if(productoActual == null) {
-			respuesta.put("mensaje", "Error al actualizar categorias ".concat(id.toString()).concat("no existe en la base de datos"));
-			return new ResponseEntity<Map<String, Object>>(respuesta, HttpStatus.NOT_FOUND);
+		    List<String> errores = resultado.getFieldErrors().stream()
+			    .map(err -> "La columna" +  err.getField() + " " + err.getDefaultMessage())
+			    .collect(Collectors.toList());
+		    respuesta.put("erorres", errores);
+		    return new ResponseEntity<Map<String,Object>> (respuesta, HttpStatus.NOT_FOUND);
 		}
 		try {
-			productoActual.setNombreProducto(producto.getNombreProducto());
-			productoActual.setDescripcionProducto(producto.getDescripcionProducto());
-			productoActual.setExistencia(producto.getExistencia());
-			productoActual.setPrecioProducto(producto.getPrecioProducto());
-			productoActual.setIdCategoria(producto.getIdCategoria());
-			productoActual.setFechaCreacion(producto.getFechaCreacion());
-			productoActual.setIdProducto(producto.getIdProducto());
-			productoActualizado = service.save(productoActualizado);
-		} catch (DataAccessException e) {
-			respuesta.put("mensaje", "Error al actualizar");
-			respuesta.put("error", e.getMessage().concat(" = ").concat(e.getMostSpecificCause().getMessage()));
-			return new ResponseEntity<Map<String, Object>>(respuesta, HttpStatus.INTERNAL_SERVER_ERROR);
+		    ProductoActual.setNombreProducto(producto.getNombreProducto());
+		    ProductoActual.setDescripcionProducto(producto.getDescripcionProducto());
+		    ProductoActual.setExistencia(producto.getExistencia());
+		    ProductoActual.setPrecioProducto(producto.getPrecioProducto());
+		    ProductoActual.setIdCategoria(producto.getIdCategoria());
+		    ProductoActualizado = service.save(ProductoActual);
+		}catch(DataAccessException e){
+		    respuesta.put("mensaje", " Error al actualizar");
+		    respuesta.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+		    return new ResponseEntity<Map<String,Object>>(respuesta, HttpStatus.INTERNAL_SERVER_ERROR); 
 		}
-		respuesta.put("mensaje", "El producto se actualizó satisfactoriamente");
-		respuesta.put("producto", productoActualizado);
-		return new ResponseEntity<Map<String, Object>>(respuesta, HttpStatus.CREATED);
-	}
+
+		respuesta.put("mensaje", "El producto se actualizo correctamente");
+		respuesta.put("producto", ProductoActualizado);
+		return new ResponseEntity<Map<String,Object>>(respuesta, HttpStatus.CREATED);
+
+	    }
 
 	@DeleteMapping("/producto/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
